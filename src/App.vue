@@ -1,21 +1,31 @@
-<script setup>
-// This starter template is using Vue 3 <script setup> SFCs
-// Check out https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup
-import HelloWorld from './components/HelloWorld.vue'
-</script>
-
 <template>
-  <img alt="Vue logo" src="./assets/logo.png" />
-  <HelloWorld msg="Hello Vue 3 + Vite" />
+  <div class="container" style="padding: 50px 0 100px 0">
+    <Profile v-if="store.user" />
+    <Auth v-else />
+  </div>
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
+<script>
+import { store } from "./store";
+import { supabase } from "./supabase";
+import Auth from "./components/Auth.vue";
+import Profile from "./components/Profile.vue";
+
+export default {
+  components: {
+    Auth,
+    Profile,
+  },
+
+  setup() {
+    store.user = supabase.auth.user();
+    supabase.auth.onAuthStateChange((_, session) => {
+      store.user = session.user;
+    });
+
+    return {
+      store,
+    };
+  },
+};
+</script>
